@@ -67,6 +67,7 @@ class MaxArm_ctl:
     """
 
     def serial_send(self, data):
+        print(data)
         self.__uart.write(data)
 
     def set_angles(self, angles, time):
