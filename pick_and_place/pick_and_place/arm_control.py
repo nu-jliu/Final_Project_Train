@@ -1,10 +1,18 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.callback_groups import ReentrantCallbackGroup
 
 from std_srvs.srv import Trigger, Trigger_Request, Trigger_Response
 
 from pick_and_place import MaxArm_ctl
-from train_interfaces.srv import MoveArm, MoveArm_Request, MoveArm_Response
+from train_interfaces.srv import (
+    MoveArm,
+    MoveArm_Request,
+    MoveArm_Response,
+    GetPosition,
+    GetPosition_Request,
+    GetPosition_Response,
+)
 
 # import MaxArm_ctl
 import time
@@ -15,6 +23,7 @@ class ArmControl(Node):
 
     def __init__(self):
         super().__init__("arm_con")
+        self.callback_group = ReentrantCallbackGroup()
         self.arm_ser = serial.Serial(port="/dev/ttyUSB0", baudrate=115200)
         self.get_logger().info(f"Serial Device connected: {self.arm_ser}")
 
@@ -29,7 +38,7 @@ class ArmControl(Node):
             self.srv_close_suction_callback,
         )
         self.srv_get_xyz = self.create_service(
-            Trigger,
+            GetPosition,
             "read_xyz",
             self.srv_get_xyz_callback,
         )
@@ -38,14 +47,31 @@ class ArmControl(Node):
             "move_arm",
             self.srv_move_arm_callback,
         )
+        self.srv_go_home = self.create_service(
+            Trigger,
+            "go_home",
+            self.srv_go_home_callback,
+        )
+
+    def wait_until_data(self):
+        while True:
+            if self.arm_ser.in_waiting > 0:
+                break
+
+            self.get_logger().warn(f"Data unavailable, continue waiting ...")
+
+        time.sleep(0.1)
 
     def srv_open_suction_callback(
         self, request: Trigger_Request, response: Trigger_Response
     ):
         # self.arm.set_SuctioNnozzle(3)
+        self.arm_ser.reset_input_buffer()
         self.arm_ser.write("nozzle.on()\r\n".encode())
+        self.wait_until_data()
+
         self.get_logger().info(f"Received response: {self.arm_ser.read_all().decode()}")
-        time.sleep(2)
+        # time.sleep(2)
 
         response.success = True
         response.message = "Suction cup enabled"
@@ -55,24 +81,32 @@ class ArmControl(Node):
         self, request: Trigger_Request, response: Trigger_Response
     ):
         # self.arm.set_SuctioNnozzle(0)
+        self.arm_ser.reset_input_buffer()
         self.arm_ser.write("nozzle.off()\r\n".encode())
+        self.wait_until_data()
+
         self.get_logger().info(f"Received response: {self.arm_ser.read_all().decode()}")
-        time.sleep(2)
+        # time.sleep(2)
 
         response.success = True
         response.message = "Suction cup disabled"
         return response
 
     def srv_get_xyz_callback(
-        self, request: Trigger_Request, response: Trigger_Response
+        self, request: GetPosition_Request, response: GetPosition_Response
     ):
         # xyz = self.arm.read_xyz()
-        self.arm_ser.flush()
+        self.arm_ser.reset_input_buffer()
         self.arm_ser.write("arm.position\r\n".encode())
-        xyz = self.arm_ser.read(size=250).decode()
+        self.wait_until_data()
+
+        xyz = self.arm_ser.read_all().decode()
         self.get_logger().info(f"{xyz}")
 
-        response.success = True
+        response.position.x = 0
+        response.position.y = 0
+        response.position.z = 0
+
         return response
 
     def srv_move_arm_callback(
@@ -82,7 +116,20 @@ class ArmControl(Node):
         y = request.position.y
         z = request.position.z
 
-        self.arm_ser.write(f"arm.set_position(({x}, {y}, {z}), 2000)\r\n".encode())
+        self.arm_ser.write(f"arm.set_position(({x}, {y}, {z}), 3000)\r\n".encode())
+        self.wait_until_data()
+
+        self.get_logger().info(f"Received response: {self.arm_ser.read_all().decode()}")
+
+        response.success = True
+        return response
+
+    def srv_go_home_callback(
+        self, request: Trigger_Request, response: Trigger_Response
+    ):
+        self.arm_ser.write(f"arm.set_position((163.0, 0.0, 212.0), 3000)\r\n".encode())
+        self.wait_until_data()
+
         self.get_logger().info(f"Received response: {self.arm_ser.read_all().decode()}")
 
         response.success = True

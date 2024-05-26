@@ -23,6 +23,7 @@ rosidl_generate_interfaces(
     ${PROJECT_NAME}
     # ${SRV_FILES}
     "srv/MoveArm.srv"
+    "srv/GetPosition.srv"
     DEPENDENCIES
     geometry_msgs
 )
