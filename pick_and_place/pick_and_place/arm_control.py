@@ -17,6 +17,7 @@ from train_interfaces.srv import (
 # import MaxArm_ctl
 import time
 import serial
+import scanf
 
 
 class ArmControl(Node):
@@ -101,11 +102,15 @@ class ArmControl(Node):
         self.wait_until_data()
 
         xyz = self.arm_ser.read_all().decode()
-        self.get_logger().info(f"{xyz}")
+        # self.get_logger().info(f"Received response: {xyz}")
 
-        response.position.x = 0
-        response.position.y = 0
-        response.position.z = 0
+        lines = xyz.splitlines()
+        x, y, z = scanf.scanf("(%f, %f, %f)", lines[1])
+        self.get_logger().info(f"x: {x}, y: {y}, z: {z}")
+
+        response.position.x = x
+        response.position.y = y
+        response.position.z = z
 
         return response
 
