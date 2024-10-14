@@ -75,6 +75,9 @@ class ServoControl(Node):
 
     def timer_callback(self):
         for i, (curr, desired) in enumerate(zip(self.current_pos, self.desired_pos)):
+            desired = min(desired, 180)
+            desired = max(desired, 0)
+
             if curr is None:
                 target = desired
             elif curr < desired:
@@ -100,9 +103,9 @@ class ServoControl(Node):
 
         for i in range(4):
             self.desired_pos[i] = self.home_pos[i] + msg.position[i] * 180 / math.pi
-            self.get_logger().info(
-                f"Received joint {i} with position {msg.position[i]}"
-            )
+            # self.get_logger().info(
+            #     f"Received joint {i} with position {msg.position[i]}"
+            # )
 
     def srv_left_leg_down_callback(
         self, request: Trigger_Request, response: Trigger_Response

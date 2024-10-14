@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="arm_control" exec="servo_control" name="servo_control" />
+    <node pkg="arm_control" exec="servo_control" name="arm_teleop" />
+</launch>

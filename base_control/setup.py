@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = "arm_control"
+package_name = "base_control"
 
 setup(
     name=package_name,
@@ -18,11 +18,6 @@ setup(
     license="TODO: License declaration",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": [
-            f"servo_control = {package_name}.servo_control:main",
-            f"command_publisher = {package_name}.js_publisher:main",
-            f"arm_teleop = {package_name}.arm_teleop:main",
-            f"pump_control = {package_name}.pump_control:main",
-        ],
+        "console_scripts": [f"base_control = {package_name}.base_control:main"],
     },
 )
