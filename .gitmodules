@@ -1,0 +1,3 @@
+[submodule "MaxArm"]
+	path = MaxArm
+	url = git@github.com:nu-jliu/MaxArm.git

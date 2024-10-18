@@ -1,7 +1,11 @@
 <launch>
-    <node pkg="arm_control" exec="servo_control" name="servo_control" />
+    <arg name="teleop" default="true"/>
+
+    <!-- arm -->
     <node pkg="arm_control" exec="pump_control" name="pump_control" />
-    <node pkg="arm_control" exec="arm_teleop" name="arm_teleop" />
+    <node pkg="arm_control" exec="servo_control" name="servo_control" />
+    <node pkg="arm_control" exec="arm_teleop" name="arm_teleop" if="$(var teleop)"/>
+    
+    <!-- base -->
     <node pkg="base_control" exec="base_control" name="base_control" />
-    <!-- <n -->
 </launch>

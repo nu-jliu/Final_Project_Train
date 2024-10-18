@@ -22,7 +22,8 @@ class ServoControl(Node):
 
         self.get_logger().info("Servo initialized")
 
-        self.home_pos = [20.0, 100.0, 35.0, 0.0]
+        self.home_pos = [180.0, 100.0, 35.0, 0.0]
+        self.leg_home_pos = [100]
 
         self.current_pos: list[float] = [None] * 4
         self.desired_pos: list[float] = copy.deepcopy(self.home_pos)
@@ -33,28 +34,17 @@ class ServoControl(Node):
             callback_group=self.callback_group,
         )
 
-        self.srv_left_leg_down = self.create_service(
+        self.srv_leg_up = self.create_service(
             Trigger,
-            "leg/left/down",
-            self.srv_left_leg_down_callback,
+            "leg/up",
+            self.srv_leg_up_callback,
             callback_group=self.callback_group,
         )
-        self.srv_left_leg_up = self.create_service(
+
+        self.srv_leg_down = self.create_service(
             Trigger,
-            "leg/left/up",
-            self.srv_left_leg_up_callback,
-            callback_group=self.callback_group,
-        )
-        self.srv_right_leg_down = self.create_service(
-            Trigger,
-            "leg/right/down",
-            self.srv_right_leg_down_callback,
-            callback_group=self.callback_group,
-        )
-        self.srv_right_leg_up = self.create_service(
-            Trigger,
-            "leg/right/up",
-            self.srv_right_leg_up_callback,
+            "leg/down",
+            self.srv_leg_down_callback,
             callback_group=self.callback_group,
         )
 
@@ -63,7 +53,10 @@ class ServoControl(Node):
             "arm/js_command",
             self.sub_js_command_callback,
             10,
+            callback_group=self.callback_group,
         )
+
+        self.leg_up()
 
     def __del__(self):
         for i in range(16):
@@ -74,6 +67,8 @@ class ServoControl(Node):
         rclpy.try_shutdown()
 
     def timer_callback(self):
+        # self.get_logger().info("Timer")
+
         for i, (curr, desired) in enumerate(zip(self.current_pos, self.desired_pos)):
             desired = min(desired, 180)
             desired = max(desired, 0)
@@ -93,6 +88,7 @@ class ServoControl(Node):
             self.get_logger().info(f"Set servo {i} to position {target}")
 
     def sub_js_command_callback(self, msg: JointState):
+        # self.get_logger().info("joint command")
         if len(msg.position) < 4:
             self.get_logger().error("Position command in valid")
 
@@ -102,54 +98,40 @@ class ServoControl(Node):
         # self.desired_pos[3] = self.home_pos[3] + msg.position[3] * 180 / math.pi
 
         for i in range(4):
-            self.desired_pos[i] = self.home_pos[i] + msg.position[i] * 180 / math.pi
+            self.desired_pos[i] = self.home_pos[i] + msg.position[i] * 160 / math.pi
             # self.get_logger().info(
             #     f"Received joint {i} with position {msg.position[i]}"
             # )
 
-    def srv_left_leg_down_callback(
-        self, request: Trigger_Request, response: Trigger_Response
+    def srv_leg_down_callback(
+        self,
+        request: Trigger_Request,
+        response: Trigger_Response,
     ):
-        self.get_logger().info("Putting down left leg")
-
-        self.servo_kit.servo[6].angle = 90
-        self.servo_kit.servo[7].angle = 90
+        self.leg_down()
 
         response.success = True
         return response
 
-    def srv_left_leg_up_callback(
-        self, request: Trigger_Request, response: Trigger_Response
+    def srv_leg_up_callback(
+        self,
+        request: Trigger_Request,
+        response: Trigger_Response,
     ):
-        self.get_logger().info("Putting up left leg")
-
-        self.servo_kit.servo[6].angle = 20
-        self.servo_kit.servo[7].angle = 180
+        self.leg_up()
 
         response.success = True
         return response
 
-    def srv_right_leg_down_callback(
-        self, request: Trigger_Request, response: Trigger_Response
-    ):
-        self.get_logger().info("Putting down right leg")
+    def leg_down(self):
+        self.get_logger().info("Putting leg down")
+        self.servo_kit.servo[4].angle = 100
+        self.servo_kit.servo[5].angle = 105
 
-        self.servo_kit.servo[4].angle = 90
-        self.servo_kit.servo[5].angle = 90
-
-        response.success = True
-        return response
-
-    def srv_right_leg_up_callback(
-        self, request: Trigger_Request, response: Trigger_Response
-    ):
-        self.get_logger().info("Putting up right leg")
-
-        self.servo_kit.servo[4].angle = 180
-        self.servo_kit.servo[5].angle = 20
-
-        response.success = True
-        return response
+    def leg_up(self):
+        self.get_logger().info("Putting leg up")
+        self.servo_kit.servo[4].angle = 160
+        self.servo_kit.servo[5].angle = 40
 
 
 def main(args=None):
