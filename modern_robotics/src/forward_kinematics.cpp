@@ -5,10 +5,10 @@ namespace mr
 {
 const arma::mat44 FKinBody(
   const arma::mat44 & M, const arma::mat & Blist,
-  const std::vector<double> & thetalist
+  const arma::colvec & thetalist
 )
 {
-  arma::mat44 T = M;
+  arma::mat44 T(M);
   for (size_t i = 0; i < thetalist.size(); ++i) {
     const auto theta = thetalist.at(i);
     const arma::colvec Bvec = Blist.col(i) * theta;
@@ -24,10 +24,10 @@ const arma::mat44 FKinBody(
 
 const arma::mat44 FKinSpace(
   const arma::mat44 & M, const arma::mat & Slist,
-  const std::vector<double> & thetalist
+  const arma::colvec & thetalist
 )
 {
-  arma::mat44 T = M;
+  arma::mat44 T(M);
   for (int i = static_cast<int>(thetalist.size()) - 1; i >= 0; --i) {
     const auto theta = thetalist.at(i);
     const arma::colvec Svec = Slist.col(i) * theta;

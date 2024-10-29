@@ -15,8 +15,9 @@ namespace mr
 ///         effector frame when the joints are at the specified coordinates
 ///         (i.t.o Body Frame)
 const arma::mat44 FKinBody(
-  const arma::mat44 & M, const arma::mat & Blist,
-  const std::vector<double> & thetalist
+  const arma::mat44 & M,
+  const arma::mat & Blist,
+  const arma::colvec & thetalist
 );
 
 /// \brief Computes forward kinematics in the space frame for an open chain robot
@@ -30,8 +31,9 @@ const arma::mat44 FKinBody(
 ///         effector frame when the joints are at the specified coordinates
 ///         (i.t.o Space Frame)
 const arma::mat44 FKinSpace(
-  const arma::mat44 & M, const arma::mat & Slist,
-  const std::vector<double> & thetalist
+  const arma::mat44 & M,
+  const arma::mat & Slist,
+  const arma::colvec & thetalist
 );
 }
 
