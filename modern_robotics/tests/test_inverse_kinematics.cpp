@@ -24,10 +24,8 @@ TEST_CASE("Testing inverse kinematics body", "[IKinBody]")
     {0, 0, 0, 1}
   };
   const std::vector<double> thetalist0{1.5, 2.5, 3};
-  const double emog = 0.01;
-  const double ev = 0.001;
 
-  const auto result = mr::IKinBody(Blist, M, T, thetalist0, emog, ev);
+  const auto result = mr::IKinBody(Blist, M, T, thetalist0);
   const arma::colvec thetalist = std::get<0>(result);
   const bool success = std::get<1>(result);
 

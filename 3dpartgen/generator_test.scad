@@ -31,7 +31,7 @@ include </home/jingkun/.local/lib/python3.10/site-packages/solid2/extensions/bos
 union() {
 	difference() {
 		union() {
-			path_sweep(path = arc(angle = 20, d = 900, n = 20), shape = [[0, 0], [20, 0], [20, 10], [15, 10], [15, 7], [10, 7], [10, 10], [0, 10], [-10, 10], [-10, 7], [-15, 7], [-15, 10], [-20, 10], [-20, 0]]);
+			path_sweep(path = arc(angle = 15, d = 900, n = 20), shape = [[0, 0], [20, 0], [20, 10], [15, 10], [15, 7], [10, 7], [10, 10], [0, 10], [-10, 10], [-10, 7], [-15, 7], [-15, 10], [-20, 10], [-20, 0]]);
 			fwd(y = 15) {
 				right(x = 450.0) {
 					cylinder(h = 10, r = 5.5);
@@ -44,15 +44,15 @@ union() {
 			}
 		}
 		down(z = 0.5) {
-			back(y = 141.69306042633417) {
-				right(x = 427.30794121689246) {
+			back(y = 103.91153455437644) {
+				right(x = 438.03126941641347) {
 					cylinder(h = 11, r = 6.5);
 				}
 			}
 		}
-		translate(v = [0, -153.90906449655097, 0]) {
-			translate(v = [422.86167935365876, 0, 0]) {
-				rotate(a = 20) {
+		translate(v = [0, -116.46857029613433, 0]) {
+			translate(v = [434.6666218300807, 0, 0]) {
+				rotate(a = 15) {
 					cube(anchor = CENTER, size = [7, 15, 30]);
 				}
 			}

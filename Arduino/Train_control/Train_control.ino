@@ -19,7 +19,7 @@ static volatile double motor_speed = 0;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -74,8 +74,8 @@ void serialEvent()
   if (Serial.available()) {
     char command = Serial.peek();
     String str = Serial.readStringUntil('\n');
-    Serial.println(command);
-    Serial.println(str);
+    // Serial.println(command);
+    // Serial.println(str);
 
     switch (command) {
       case 'p':

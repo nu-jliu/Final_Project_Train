@@ -15,6 +15,7 @@ project(arm_kinematics)
 # https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
 # find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(Armadillo REQUIRED)
+find_package(modern_robotics REQUIRED)
 
 include_directories(${ARMADILLO_INCLUDE_DIRS})
 
@@ -60,7 +61,10 @@ target_include_directories(${PROJECT_NAME}
 # This will automatically add all required library files
 # that need to be linked
 # and paths to th locations of header files
-target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} 
+    ${ARMADILLO_LIBRARIES}
+    modern_robotics::modern_robotics
+)
 # target_link_libraries(frame_main ${PROJECT_NAME})
 
 # install the include files by copying the whole include directory
@@ -105,16 +109,21 @@ if(NOT CMAKE_CROSSCOMPILING)
             "tests/test_*.cpp"
         )
 
-        # A test is just an executable that is linked against the unit testing library
-        add_executable(test_${PROJECT_NAME} ${TEST_SRC_FILES})
-        
-        target_link_libraries(test_${PROJECT_NAME} 
-            ${PROJECT_NAME} 
-            Catch2::Catch2WithMain
-        )
+        foreach(TEST_SRC_FILE ${TEST_SRC_FILES})
+            get_filename_component(TEST_NAME ${TEST_SRC_FILE} NAME_WE)
+            message(TEST_SRC_FILE=${TEST_SRC_FILE})
 
-        # register the test with CTest, telling it what executable to run
-        add_test(NAME ${PROJECT_NAME}_test COMMAND test_${PROJECT_NAME})
+            # A test is just an executable that is linked against the unit testing library
+            add_executable(${TEST_NAME} ${TEST_SRC_FILE})
+            
+            target_link_libraries(${TEST_NAME} 
+                ${PROJECT_NAME} 
+                Catch2::Catch2WithMain
+            )
+
+            # register the test with CTest, telling it what executable to run
+            add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+        endforeach()
     endif()
 
     # Building documentation should be optional.
@@ -125,13 +134,17 @@ if(NOT CMAKE_CROSSCOMPILING)
     # build just because Doxygen is missing
     if(${DOXYGEN_FOUND} AND ${BUILD_DOCS})
 
-        # Turn the README.md into the homepage of the doxygen docs
+        set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+        set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
         set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
 
-        # Tell Doxygen where to find the documentation
-        doxygen_add_docs(doxygen include/ src/ README.md ALL)
+        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 
-        # The documentation will be in the build/html directory
-        # The main page is build/html/index.html
+        add_custom_target(doc_doxygen ALL
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
     endif()
 endif()

@@ -6,8 +6,8 @@ constexpr double tolerance = 1e-8;
 TEST_CASE("Test Joint Angle", "[Joint]")
 {
   std::stringstream ss1, ss2;
-  arm_kinematics::JointAngles test1{1.2, 0.4, 0.6};
-  arm_kinematics::JointAngles test2{-0.9, 0.3, 0.45};
+  arm::JointAngles test1{1.2, 0.4, 0.6};
+  arm::JointAngles test2{-0.9, 0.3, 0.45};
 
   ss1 << test1;
   ss2 << test2;
@@ -18,8 +18,8 @@ TEST_CASE("Test Joint Angle", "[Joint]")
 
 TEST_CASE("Test End-Effector Pose", "[EEPose]") {
   std::stringstream ss1, ss2;
-  arm_kinematics::EEPose test1{1.2, 3.2, 4.2};
-  arm_kinematics::EEPose test2{0.8, 1.2, 3.3};
+  arm::EEPose test1{1.2, 3.2, 4.2};
+  arm::EEPose test2{0.8, 1.2, 3.3};
 
   ss1 << test1;
   ss2 << test2;

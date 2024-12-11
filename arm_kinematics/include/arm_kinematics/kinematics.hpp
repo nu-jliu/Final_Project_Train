@@ -4,37 +4,41 @@
 #include <iostream>
 #include <armadillo>
 
-namespace arm_kinematics
+namespace arm
 {
 /// \brief Length of base link
-constexpr double L1 = 0.3;
+constexpr double L1 = 55e-3;
 
 /// \brief Length of shoulder link
-constexpr double L2 = 0.2;
+constexpr double L2 = 128e-3;
 
 /// \brief Length of elbow link
-constexpr double L3 = 0.1;
+constexpr double L3 = 138e-3;
 
 /// \brief Home configuration
 const arma::mat44 M{
-  {0, 0, 1, 0},
+  {0, 1, 0, 0},
   {1, 0, 0, L3},
-  {0, 1, 0, L2 + L3},
+  {0, 0, -1, L1 + L2},
   {0, 0, 0, 1}
 };
 
 /// \brief Screw axis around space frame
 const arma::mat Slist = arma::mat{
   {0, 0, 1, 0, 0, 0},
-  {1, 0, 0, 0, L1, 0},
-  {1, 0, 0, L1 + L2, 0}
+  {-1, 0, 0, 0, L1, 0},
+  {-1, 0, 0, 0, L1 + L2, 0},
+  {-1, 0, 0, 0, L1 + L2, -L3},
+  {0, 0, -1, -L3, 0, 0}
 }.t();
 
 /// \brief Screw axis around body frame
 const arma::mat Blist = arma::mat{
-  {0, 1, 0, 0, 0, -L3},
-  {0, 0, 1, -L2, L3, 0},
-  {0, 0, 1, 0, L3, 0}
+  {0, 0, 1, 0, L3, 0},
+  {0, -1, 0, L2, 0, L3},
+  {0, -1, 0, 0, 0, L3},
+  {0, -1, 0, 0, 0, 0},
+  {0, 0, 1, 0, 0, 0}
 }.t();
 
 /// \brief Joint angles of the arm
@@ -75,15 +79,18 @@ std::ostream & operator<<(std::ostream & os, const JointAngles & joint_angles);
 /// \return Output stream
 std::ostream & operator<<(std::ostream & os, const EEPose & ee_pose);
 
-/// \brief
-/// \param joints
-/// \return
-EEPose compute_fk(JointAngles joints);
+double normalize_angle(const double rad);
 
-/// \brief
-/// \param pose
-/// \return
-JointAngles compute_ik(EEPose pose);
+/// \brief Compute the forward kinematics of the arm
+/// \param joints The joint angles
+/// \return The result end-effector pose
+const EEPose compute_fk(const JointAngles & joints);
+
+/// \brief Compute the inverse kinematics of the arm
+/// \param pose The end-effector pose
+/// \param joints The joint angles of the arm
+/// \return The result joint angles
+const std::tuple<JointAngles, bool> compute_ik(const EEPose & pose, const JointAngles & joints);
 }
 
 #endif

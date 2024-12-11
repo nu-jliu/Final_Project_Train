@@ -1,40 +1,15 @@
 cmake_minimum_required(VERSION 3.8)
-project(train_teleop)
+project(gripper_control)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-O3 -Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
-find_package(rclcpp REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(std_srvs REQUIRED)
-find_package(train_interfaces REQUIRED)
-find_package(modern_robotics REQUIRED)
-find_package(arm_kinematics REQUIRED)
-
-add_executable(arm_teleop src/arm_teleop.cpp)
-target_include_directories(arm_teleop PRIVATE include)
-target_link_libraries(arm_teleop
-  arm_kinematics::arm_kinematics
-)
-ament_target_dependencies(arm_teleop 
-  rclcpp
-  sensor_msgs
-  std_srvs
-  train_interfaces
-)
-
-install(DIRECTORY include/
-  DESTINATION include
-)
-
-install(TARGETS arm_teleop
-  DESTINATION lib/${PROJECT_NAME}
-)
+# find_package(<dependency> REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

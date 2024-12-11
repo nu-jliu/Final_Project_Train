@@ -129,7 +129,7 @@ trackshape = [
     [-20, 0],
 ]
 diameter = 900
-angle = 20
+angle = 15
 
 rad = (90 - angle) / 180 * np.pi
 

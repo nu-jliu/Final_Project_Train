@@ -15,7 +15,7 @@ class JointStatePublisher(Node):
 
         msg = JointState()
 
-        msg.position = [0.0, 0.0, 0.0, 0.0]
+        msg.position = [-math.pi / 4.0, 0.1, 0.1, -0.2]
 
         self.pub_command.publish(msg)
 

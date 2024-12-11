@@ -130,13 +130,17 @@ if(NOT CMAKE_CROSSCOMPILING)
     # build just because Doxygen is missing
     if(${DOXYGEN_FOUND} AND ${BUILD_DOCS})
 
-        # Turn the README.md into the homepage of the doxygen docs
+        set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+        set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
         set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
 
-        # Tell Doxygen where to find the documentation
-        doxygen_add_docs(doxygen include/ src/ README.md ALL)
+        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 
-        # The documentation will be in the build/html directory
-        # The main page is build/html/index.html
+        add_custom_target(doc_doxygen ALL
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
     endif()
 endif()

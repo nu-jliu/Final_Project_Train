@@ -26,6 +26,7 @@ bool compute_err(const arma::vec6 & V, const double eomg, const double ev)
   const double mag_omg = magnitute(Vomg);
   const double mag_v = magnitute(Vv);
 
+  // std::cout << "err: " << mag_omg << " " << mag_v << std::endl;
   return mag_omg > eomg || mag_v > ev;
 }
 }

@@ -6,6 +6,8 @@
 
 namespace mr
 {
+constexpr int maxIter = 100;
+
 const arma::vec6 compute_Vb(
   const arma::mat & Blist,
   const arma::mat44 & M,
@@ -43,7 +45,6 @@ const std::tuple<arma::colvec, bool> IKinBody(
 {
   arma::colvec thetalist = thetalist0;
   int i = 0;
-  const int maxIter = 20;
 
   arma::vec6 Vb = compute_Vb(Blist, M, T, thetalist);
   bool err = compute_err(Vb, emog, ev);
@@ -56,6 +57,8 @@ const std::tuple<arma::colvec, bool> IKinBody(
 
     Vb = compute_Vb(Blist, M, T, thetalist);
     err = compute_err(Vb, emog, ev);
+
+    // std::cout << "Iter " << i << ": " << dthetalist << std::endl;
   }
 
   return {thetalist, !err};
@@ -72,7 +75,6 @@ const std::tuple<arma::colvec, bool> IKinSpace(
 {
   arma::colvec thetalist(thetalist0);
   int i = 0;
-  const int maxIter = 20;
 
   arma::mat44 Tsb = FKinSpace(M, Slist, thetalist);
   arma::vec6 Vs = compute_Vs(Tsb, T);

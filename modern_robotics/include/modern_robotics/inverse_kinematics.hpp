@@ -56,8 +56,8 @@ const std::tuple<arma::colvec, bool> IKinBody(
   const arma::mat44 & M,
   const arma::mat44 & T,
   const arma::colvec & thetalist0,
-  const double emog,
-  const double ev
+  const double emog = 1e-2,
+  const double ev = 1e-3
 );
 
 /// \brief Computes inverse kinematics in the space frame for an open chain robot
@@ -85,9 +85,9 @@ const std::tuple<arma::colvec, bool> IKinSpace(
   const arma::mat44 & M,
   const arma::mat44 & T,
   const arma::colvec & thetalist0,
-  const double emog,
-  const double ev
+  const double emog = 1e-2,
+  const double ev = 1e-3
 );
 }
 
-#endif
+#endif /// MODERN_ROBOTICS__INVERSE_KINEMATICS_HPP___
